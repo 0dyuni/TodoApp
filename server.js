@@ -47,6 +47,15 @@ app.post("/add", function (req, res) {
 // list
 // ejs 파일은 항상 views 폴더안에 있어야 한다.
 app.get("/list", function (req, res) {
-  res.render("list.ejs");
-  //DB에 저장된 post collection데이터 꺼내기
+  //DB에 저장된 post collection의 모든 데이터 꺼내기
+  //DB->post 컬렉션에 접근
+  //.find === 모든 데이터
+  //find만 사용하면 모든 메타 데이터까지 오기 떄문에 .toArray 를 붙여준다.
+  db.collection("post")
+    .find()
+    .toArray(function (err, req) {
+      console.log(req);
+      //가져온 데이터를 ejs파일에 넣는다.
+      res.render("list.ejs", { posts: req });
+    });
 });
