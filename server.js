@@ -1,0 +1,52 @@
+const express = require("express");
+const app = express();
+// app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+const MongoClient = require("mongodb").MongoClient;
+//저장을 위한 변수
+var db;
+// ejs 모듈 사용
+app.set("view engine", "ejs");
+
+MongoClient.connect(
+  "mongodb+srv://0dyuni:ww2015**@shop.8ewlc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority ",
+  function (err, client) {
+    //연결되면 할일
+    //에러 리턴
+    if (err) return console.log(err);
+    // "TodoApp" database(폴더)에 연결
+    db = client.db("TodoApp");
+    //정상연결
+    app.listen(8080, function () {
+      console.log("listening on 8080");
+    });
+  }
+);
+// 홈
+app.get("/", function (req, res) {
+  res.sendFile(__dirname + "/index.html");
+});
+// write
+app.get("/write", function (req, res) {
+  res.sendFile(__dirname + "/write.html");
+});
+
+// add
+app.post("/add", function (req, res) {
+  res.send("전송완료");
+  console.log(req.body);
+  // Db에 입력한 데이터 저장
+  db.collection("post").insertOne(
+    { 제목: req.body.title, 날짜: req.body.date },
+    function (err, res) {
+      if (err) return console.log(err);
+      console.log("저장완료");
+    }
+  );
+});
+// list
+// ejs 파일은 항상 views 폴더안에 있어야 한다.
+app.get("/list", function (req, res) {
+  res.render("list.ejs");
+  //DB에 저장된 post collection데이터 꺼내기
+});
