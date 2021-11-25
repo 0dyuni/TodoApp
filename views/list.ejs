@@ -16,7 +16,7 @@
 <body>
     <!-- 네비바 -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Todo App</a>
+        <a class="navbar-brand" href="/#">Todo App</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -24,13 +24,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="/#">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Write</a>
+                    <a class="nav-link" href="/write">Write</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">임시</a>
+                    <a class="nav-link" href="/list">List</a>
                 </li>
             </ul>
         </div>
@@ -61,6 +61,8 @@
         $(".delete").click(function (e) {
             // e.target: 내가 누른 요소, dataset.id: 요소의 _id값을 달라.
             var btnCode = e.target.dataset.id;
+            // jquery 에서 this이벤트가 동작하는 곳  == 삭제버튼
+            var select = $(this);
             // AJAX: 새로고침 없이 서버와 통신할 수 있게 하는 JS문법
             // method: 요철할 기능, url: 요청 경로, data: 요청과 함께 보낼데이터
             $.ajax({
@@ -70,7 +72,12 @@
                 // 보낸요청이 성공하면 실행.    
             }).done(function (res) {
                 //AJAX 성공시 실핼
-            });
+                // .parent: 삭제버튼의 부모요소"li"를 가져온다.
+                select.parent("li").fadeOut();
+            }).fail(function (xhr, textStatus, errorThrown) {
+                //AJAX 실패시 실행
+                console.log(xhr, textStatus, errorThrown);
+            })
         })
     </script>
 

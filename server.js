@@ -86,5 +86,5 @@ app.delete("/delete", function (req, res) {
   db.collection("post").deleteOne(req.body, function (err, res) {
     console.log("삭제완료");
   });
-  res.send("삭제완료");
+  res.status(200).send({ message: "성공이닷" });
 });
