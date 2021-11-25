@@ -38,14 +38,27 @@ app.post("/add", function (req, res) {
   // _id 값을 관리하기 위해 counter컬렉션을 DB에 추가함(삭제, 수정이 쉬움).
   //DB "counter" collection에 저장된 name: "게시물갯수"데이터 가져오기
   db.collection("counter").findOne({ name: "게시물갯수" }, function (err, res) {
+    //개시물갯수를 변주에 저장
     var tp = res.totalPost;
-
     // Db에 _id: tp+1 , 입력한 데이터를 "post" collection에 저장
     db.collection("post").insertOne(
-      { _id: tp, 제목: req.body.title, 날짜: req.body.date },
+      { _id: tp + 1, 제목: req.body.title, 날짜: req.body.date },
       function (err, res) {
         if (err) return console.log(err);
         console.log("저장완료");
+        // Db에 데이터를 저장한 후 tp+1를 해주기.
+        // updateOne DB 데이터수정 (한번에 하나 여러개를 수정하려면 updateMany)
+        // updateOne({수정할 데이터}, {수정 값}) 수정값은 operator으로 써야한다.
+        db.collection("counter").updateOne(
+          { name: "게시물갯수" },
+          //operator {$inc: {totalPost: 기존값에 더해줄 값}}
+          { $inc: { totalPost: 1 } },
+          function (err, res) {
+            if (err) {
+              return console.log(err);
+            }
+          }
+        );
       }
     );
   });
