@@ -79,6 +79,12 @@ app.get("/list", function (req, res) {
 });
 
 //delete
-app.delete("/delete,", function (req, res) {
-  console.log(req.body);
+app.delete("/delete", function (req, res) {
+  //DB데이터 안에 _id를 string -> int
+  req.body._id = parseInt(req.body._id);
+  // post 컬렉션에서 하나를 삭제.
+  db.collection("post").deleteOne(req.body, function (err, res) {
+    console.log("삭제완료");
+  });
+  res.send("삭제완료");
 });

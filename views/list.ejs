@@ -47,22 +47,31 @@
                 </h4>
                 <!-- .날짜 ===  -->
                 <p> 할일 마감날짜 : <%= posts[i].날짜 %>
-                </p> <button>삭제</button>
+                </p>
+                <!--분류를 위해서 data-id로 버튼에 DB _id 지정  -->
+                <button class="delete" data-id="<%= posts[i]._id %>">삭제</button>
             </li>
             <% } %>
     </ul>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        // AJAX: 새로고침 없이 서버와 통신할 수 있게 하는 JS문법
-        // method: 요철할 기능, url: 요청 경로, data: 요청과 함께 보낼데이터
-        $.ajax({
-            method: "DELETE",
-            url: "/delete",
-            data: "게시물 번호"
-            // 보낸요청이 성공하면 실행.    
-        }).done(function (res) {
 
-        });
+
+    <script>
+        //삭제 버튼을 누르면 실행
+        $(".delete").click(function (e) {
+            // e.target: 내가 누른 요소, dataset.id: 요소의 _id값을 달라.
+            var btnCode = e.target.dataset.id;
+            // AJAX: 새로고침 없이 서버와 통신할 수 있게 하는 JS문법
+            // method: 요철할 기능, url: 요청 경로, data: 요청과 함께 보낼데이터
+            $.ajax({
+                method: "DELETE",
+                url: "/delete",
+                data: { _id: btnCode }
+                // 보낸요청이 성공하면 실행.    
+            }).done(function (res) {
+                //AJAX 성공시 실핼
+            });
+        })
     </script>
 
 
