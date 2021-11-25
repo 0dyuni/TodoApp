@@ -54,7 +54,6 @@ app.get("/list", function (req, res) {
   db.collection("post")
     .find()
     .toArray(function (err, req) {
-      console.log(req);
       //가져온 데이터를 ejs파일에 넣는다.
       res.render("list.ejs", { posts: req });
     });
