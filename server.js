@@ -35,14 +35,20 @@ app.get("/write", function (req, res) {
 app.post("/add", function (req, res) {
   res.send("전송완료");
   console.log(req.body);
-  // Db에 입력한 데이터 저장
-  db.collection("post").insertOne(
-    { 제목: req.body.title, 날짜: req.body.date },
-    function (err, res) {
-      if (err) return console.log(err);
-      console.log("저장완료");
-    }
-  );
+  // _id 값을 관리하기 위해 counter컬렉션을 DB에 추가함(삭제, 수정이 쉬움).
+  //DB "counter" collection에 저장된 name: "게시물갯수"데이터 가져오기
+  db.collection("counter").findOne({ name: "게시물갯수" }, function (err, res) {
+    var tp = res.totalPost;
+
+    // Db에 _id: tp+1 , 입력한 데이터를 "post" collection에 저장
+    db.collection("post").insertOne(
+      { _id: tp, 제목: req.body.title, 날짜: req.body.date },
+      function (err, res) {
+        if (err) return console.log(err);
+        console.log("저장완료");
+      }
+    );
+  });
 });
 // list
 // ejs 파일은 항상 views 폴더안에 있어야 한다.
