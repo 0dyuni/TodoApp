@@ -77,3 +77,8 @@ app.get("/list", function (req, res) {
       res.render("list.ejs", { posts: req });
     });
 });
+
+//delete
+app.delete("/delete,", function (req, res) {
+  console.log(req.body);
+});
