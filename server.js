@@ -73,6 +73,7 @@ app.get("/list", function (req, res) {
   db.collection("post")
     .find()
     .toArray(function (err, req) {
+      if (err) return console.log(err);
       //가져온 데이터를 ejs파일에 넣는다.
       res.render("list.ejs", { posts: req });
     });
@@ -84,7 +85,22 @@ app.delete("/delete", function (req, res) {
   req.body._id = parseInt(req.body._id);
   // post 컬렉션에서 하나를 삭제.
   db.collection("post").deleteOne(req.body, function (err, res) {
+    if (err) return console.log(err);
     console.log("삭제완료");
   });
   res.status(200).send({ message: "성공이닷" });
+});
+
+//detaile
+app.get("/detail/:id", function (req, res) {
+  //Db -> post -> _id :'__'데이터를 가져온다.
+  //req.params.id: url의 파라미터중 id
+  db.collection("post").findOne(
+    { _id: parseInt(req.params.id) },
+    function (err, result) {
+      if (err) return console.log(err);
+      console.log(result);
+      res.render("detail.ejs", { data: result });
+    }
+  );
 });
