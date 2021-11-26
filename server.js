@@ -8,6 +8,8 @@ var db;
 // ejs 모듈 사용
 app.set("view engine", "ejs");
 
+app.use("/public", express.static("public"));
+
 MongoClient.connect(
   "mongodb+srv://0dyuni:ww2015**@shop.8ewlc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority ",
   function (err, client) {
@@ -24,11 +26,11 @@ MongoClient.connect(
 );
 // 홈
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/index.html");
+  res.render(__dirname + "/views/index.ejs");
 });
 // write
 app.get("/write", function (req, res) {
-  res.sendFile(__dirname + "/write.html");
+  res.render(__dirname + "/views/write.ejs");
 });
 
 // add
@@ -99,7 +101,6 @@ app.get("/detail/:id", function (req, res) {
     { _id: parseInt(req.params.id) },
     function (err, result) {
       if (err) return console.log(err);
-      console.log(result);
       res.render("detail.ejs", { data: result });
     }
   );
