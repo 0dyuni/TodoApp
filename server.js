@@ -35,7 +35,8 @@ app.get("/write", function (req, res) {
 
 // add
 app.post("/add", function (req, res) {
-  res.send("전송완료");
+  res.redirect("/list");
+
   console.log(req.body);
   // _id 값을 관리하기 위해 counter컬렉션을 DB에 추가함(삭제, 수정이 쉬움).
   //DB "counter" collection에 저장된 name: "게시물갯수"데이터 가져오기
@@ -113,6 +114,18 @@ app.get("/edit/:id", function (req, res) {
     function (err, result) {
       if (err) return console.log(err);
       res.render("edit.ejs", { post: result });
+    }
+  );
+});
+app.put("/edit", function (req, res) {
+  db.collection("post").updateOne(
+    // ↓ name="id"인 input ↓
+    { _id: parseInt(req.body.id) },
+    // ↓ name="title"인 input ↓    ↓ name="date"인 input ↓
+    { $set: { 제목: req.body.title, 날짜: req.body.date } },
+    function (err, result) {
+      if (err) return console.log(err);
+      res.redirect("/list");
     }
   );
 });
