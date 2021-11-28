@@ -7,9 +7,9 @@ const MongoClient = require("mongodb").MongoClient;
 var db;
 // ejs 모듈 사용
 app.set("view engine", "ejs");
-
 app.use("/public", express.static("public"));
-
+const methodOverride = require("method-override");
+app.use(methodOverride("_method"));
 MongoClient.connect(
   "mongodb+srv://0dyuni:ww2015**@shop.8ewlc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority ",
   function (err, client) {
@@ -102,6 +102,17 @@ app.get("/detail/:id", function (req, res) {
     function (err, result) {
       if (err) return console.log(err);
       res.render("detail.ejs", { data: result });
+    }
+  );
+});
+
+//edit
+app.get("/edit/:id", function (req, res) {
+  db.collection("post").findOne(
+    { _id: parseInt(req.params.id) },
+    function (err, result) {
+      if (err) return console.log(err);
+      res.render("edit.ejs", { post: result });
     }
   );
 });
