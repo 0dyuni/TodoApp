@@ -159,6 +159,17 @@ app.post(
   }
 );
 
+app.get("/mypage", loginTrue, function (req, res) {
+  res.render("mypage.ejs", { 사용자: req.user });
+});
+function loginTrue(req, res, next) {
+  if (req.user) {
+    next();
+  } else {
+    res.send("로그인을 해주세요.");
+  }
+}
+
 // local 인증방식
 passport.use(
   new LocalStrategy(
@@ -198,6 +209,11 @@ passport.serializeUser(function (user, done) {
   done(null, user.id); //
 });
 //⌄이 세션 데이터를 가진 사람을DB에서 찾아라(마이페이지 접속시 발동)⌄
+//로그인한 유저의 세션아이디를 바탕으로 개인정보를 Db에서 찾는 역할
+//user.id === id === test
 passport.deserializeUser(function (id, done) {
-  done(null, {});
+  db.collection("login").findOne({ id: id }, function (err, result) {
+    // 디비에서 위에있는 user.id로 유저를 찾은 뒤에 유저 정보(result)를 넣는다.
+    done(null, result);
+  });
 });
