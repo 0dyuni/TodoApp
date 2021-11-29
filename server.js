@@ -173,12 +173,14 @@ passport.use(
     },
     // 사용자의 아이디와 비밀번호가 맞는지 DB와 검증
     function (inputId, inputPw, done) {
-      //console.log(입력한아이디, 입력한비번);
+      //console.log(inputId, inputPw);
+      // DB에 입력한 아이디가 있는지 찾기
       db.collection("login").findOne({ id: inputId }, function (err, result) {
         if (err) return done(err);
-
+        // DB에 아이디가 없으면
         if (!result)
           return done(null, false, { message: "존재하지않는 아이디요" });
+        //DB에 아이디가 있으면, 입력한 비밀번호와 result.pw 비교
         if (inputPw == result.pw) {
           return done(null, result);
         } else {
@@ -188,3 +190,14 @@ passport.use(
     }
   )
 );
+//로그인 성공->세션정보를 만듦->마이페이지등을 방문시 세션검사 하기 위해
+//로그인 유지를 위해
+//세션을 만든다.
+//⌄id를 이용해서 세션을 저장시키는 코드(로그인 성공시 발동)⌄
+passport.serializeUser(function (user, done) {
+  done(null, user.id); //
+});
+//⌄이 세션 데이터를 가진 사람을DB에서 찾아라(마이페이지 접속시 발동)⌄
+passport.deserializeUser(function (id, done) {
+  done(null, {});
+});
