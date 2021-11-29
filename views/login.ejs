@@ -17,19 +17,19 @@
     <!-- 네비바 -->
     <%- include("nav.html") %>
         <!-- input -->
-        <h4 class="container mt-4"><strong>오늘 모하징?</strong></h4>
+        <h4 class="container mt-4"><strong>로그인</strong></h4>
 
         <div class="container mt-3">
-            <form action="/add" method="POST">
+            <form action="/login" method="POST">
                 <div class="form-group">
-                    <label>뭐할거여?</label>
-                    <input type="text" class="form-control" name="title">
+                    <label>아이디</label>
+                    <input type="text" class="form-control" name="id">
                 </div>
                 <div class="form-group">
-                    <label>언제할거여?</label>
-                    <input type="text" class="form-control" name="date">
+                    <label>비밀번호</label>
+                    <input type="password" class="form-control" name="pw">
                 </div>
-                <button type="submit" class="btn btn-outline-danger">해보자!</button>
+                <button type="submit" class="btn btn-outline-danger">로그인</button>
             </form>
         </div>
 

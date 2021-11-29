@@ -10,6 +10,18 @@ app.set("view engine", "ejs");
 app.use("/public", express.static("public"));
 const methodOverride = require("method-override");
 app.use(methodOverride("_method"));
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const session = require("express-session");
+// 미들웨어
+app.use(
+  session({ secret: "scretCode", resave: true, saveUninitialized: false })
+);
+// 미들웨어
+app.use(passport.initialize());
+// 미들웨어
+app.use(passport.session());
+
 MongoClient.connect(
   "mongodb+srv://0dyuni:ww2015**@shop.8ewlc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority ",
   function (err, client) {
@@ -117,6 +129,7 @@ app.get("/edit/:id", function (req, res) {
     }
   );
 });
+
 app.put("/edit", function (req, res) {
   db.collection("post").updateOne(
     // ↓ name="id"인 input ↓
@@ -129,3 +142,49 @@ app.put("/edit", function (req, res) {
     }
   );
 });
+
+app.get("/login", function (req, res) {
+  res.render("login.ejs");
+});
+// passport.authenticate() === 입력한 아이디, 비밀번호 인증
+// lacal 방식으로 회원인지 인증
+// failureRedirect: "/fail" 인증 실패시 "/fail"로 이동
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/fail",
+  }),
+  function (req, res) {
+    res.redirect("/");
+  }
+);
+
+// local 인증방식
+passport.use(
+  new LocalStrategy(
+    {
+      //form에 id, pw로 지정한것에 넣은 값이 아이디와 비밀번호다 라고 지정
+      usernameField: "id",
+      passwordField: "pw",
+      // 로그인 후 세션을 저장할것이지
+      session: true,
+      // 아이디, 비밀번호 외 다른 정보 검증시 ture
+      passReqToCallback: false,
+    },
+    // 사용자의 아이디와 비밀번호가 맞는지 DB와 검증
+    function (inputId, inputPw, done) {
+      //console.log(입력한아이디, 입력한비번);
+      db.collection("login").findOne({ id: inputId }, function (err, result) {
+        if (err) return done(err);
+
+        if (!result)
+          return done(null, false, { message: "존재하지않는 아이디요" });
+        if (inputPw == result.pw) {
+          return done(null, result);
+        } else {
+          return done(null, false, { message: "비번틀렸어요" });
+        }
+      });
+    }
+  )
+);
