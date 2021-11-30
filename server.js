@@ -13,6 +13,7 @@ app.use(methodOverride("_method"));
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
+require("dotenv").config();
 // 미들웨어
 app.use(
   session({ secret: "scretCode", resave: true, saveUninitialized: false })
@@ -22,20 +23,17 @@ app.use(passport.initialize());
 // 미들웨어
 app.use(passport.session());
 
-MongoClient.connect(
-  "mongodb+srv://0dyuni:ww2015**@shop.8ewlc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority ",
-  function (err, client) {
-    //연결되면 할일
-    //에러 리턴
-    if (err) return console.log(err);
-    // "TodoApp" database(폴더)에 연결
-    db = client.db("TodoApp");
-    //정상연결
-    app.listen(8080, function () {
-      console.log("listening on 8080");
-    });
-  }
-);
+MongoClient.connect(process.env.DB_URL, function (err, client) {
+  //연결되면 할일
+  //에러 리턴
+  if (err) return console.log(err);
+  // "TodoApp" database(폴더)에 연결
+  db = client.db("TodoApp");
+  //정상연결
+  app.listen(8080, function () {
+    console.log("listening on 8080");
+  });
+});
 // 홈
 app.get("/", function (req, res) {
   res.render(__dirname + "/views/index.ejs");
@@ -48,7 +46,6 @@ app.get("/write", function (req, res) {
 // add
 app.post("/add", function (req, res) {
   res.redirect("/list");
-
   console.log(req.body);
   // _id 값을 관리하기 위해 counter컬렉션을 DB에 추가함(삭제, 수정이 쉬움).
   //DB "counter" collection에 저장된 name: "게시물갯수"데이터 가져오기
@@ -91,6 +88,16 @@ app.get("/list", function (req, res) {
       if (err) return console.log(err);
       //가져온 데이터를 ejs파일에 넣는다.
       res.render("list.ejs", { posts: req });
+    });
+});
+//list search
+app.get("/search", (req, res) => {
+  console.log(req.query.value);
+  db.collection("post")
+    .find({ 제목: req.query.value })
+    .toArray((err, result) => {
+      if (err) return console.log(err);
+      res.render("search-list.ejs", { posts: result });
     });
 });
 
