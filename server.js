@@ -66,9 +66,7 @@ app.post("/add", function (req, res) {
           //operator {$inc: {totalPost: 기존값에 더해줄 값}}
           { $inc: { totalPost: 1 } },
           function (err, res) {
-            if (err) {
-              return console.log(err);
-            }
+            if (err) return console.log(err);
           }
         );
       }
@@ -92,12 +90,26 @@ app.get("/list", function (req, res) {
 });
 //list search
 app.get("/search", (req, res) => {
+  var searchRequirement = [
+    {
+      $search: {
+        index: "titleSearch",
+        text: {
+          query: req.query.value,
+          path: "제목", //제목,날짜 모두에서 검색하고 싶으면 ["제목","날짜"]
+        },
+      },
+    },
+    //검색조건 추가(정렬기준)
+    { $sort: { _id: 1 } },
+  ];
   console.log(req.query.value);
   db.collection("post")
-    .find({ 제목: req.query.value })
+    // $text DB에 만들어 놓은 index에 의해 검색
+    .aggregate(searchRequirement)
     .toArray((err, result) => {
       if (err) return console.log(err);
-      res.render("search-list.ejs", { posts: result });
+      res.render("search.ejs", { posts: result });
     });
 });
 

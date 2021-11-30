@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <!-- css -->
+    <link rel="stylesheet" href="/public/main.css">
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -17,7 +19,7 @@
     <!-- 네비바 -->
     <%- include("nav.html") %>
 
-        <h4 class="text-center mt-2">Todo List</h4>
+        <h4 id="TL" class="text-center mt-2" style="cursor:pointer;">Todo List</h4>
         <!-- 검색창 -->
         <div class="container input-group mb-2">
             <input class="form-control" id="search-input">
@@ -29,7 +31,7 @@
                 <!-- 반복문 -->
                 <!-- posts.length === DB에 저장된 데이터 갯수-->
                 <% for (var i=0; i < posts.length; i++){ %>
-                    <li class="list-group-item">
+                    <li class="list-group-item" style="border: 1px solid rgb(201, 196, 196); margin-top: 10px;">
                         <!-- .제목 === -->
                         <h4 class="detail" data-id="<%= posts[i]._id %>" style="cursor:pointer;"> 할일 제목 : <%=
                                 posts[i].제목 %>
@@ -43,6 +45,8 @@
                     <% } %>
             </ul>
         </div>
+        <a id="MOVE_TOP_BTN" href="#">TOP</a>
+
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
@@ -82,6 +86,27 @@
                 window.location.replace("/search?value=" + inputVal)
 
             })
+            $("#TL").click(function () {
+                $(location).attr("href", "/list")
+            })
+            $(function () {
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 500) {
+                        $('#MOVE_TOP_BTN').fadeIn();
+                    } else {
+                        $('#MOVE_TOP_BTN').fadeOut();
+                    }
+                });
+
+                $("#MOVE_TOP_BTN").click(function () {
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
+            });
+
+
 
         </script>
 
