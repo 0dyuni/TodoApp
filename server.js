@@ -255,3 +255,11 @@ app.post("/add", function (req, res) {
     });
   });
 });
+
+app.get("/shop/shirts", function (req, res) {
+  res.send("셔츠");
+});
+
+app.get("/shop/pants", function (req, res) {
+  res.send("바지");
+});
