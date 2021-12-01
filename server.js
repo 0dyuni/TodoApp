@@ -43,36 +43,6 @@ app.get("/write", function (req, res) {
   res.render(__dirname + "/views/write.ejs");
 });
 
-// add
-app.post("/add", function (req, res) {
-  res.redirect("/list");
-  console.log(req.body);
-  // _id 값을 관리하기 위해 counter컬렉션을 DB에 추가함(삭제, 수정이 쉬움).
-  //DB "counter" collection에 저장된 name: "게시물갯수"데이터 가져오기
-  db.collection("counter").findOne({ name: "게시물갯수" }, function (err, res) {
-    //개시물갯수를 변주에 저장
-    var tp = res.totalPost;
-    // Db에 _id: tp+1 , 입력한 데이터를 "post" collection에 저장
-    db.collection("post").insertOne(
-      { _id: tp + 1, 제목: req.body.title, 날짜: req.body.date },
-      function (err, res) {
-        if (err) return console.log(err);
-        console.log("저장완료");
-        // Db에 데이터를 저장한 후 tp+1를 해주기.
-        // updateOne DB 데이터수정 (한번에 하나 여러개를 수정하려면 updateMany)
-        // updateOne({수정할 데이터}, {수정 값}) 수정값은 operator으로 써야한다.
-        db.collection("counter").updateOne(
-          { name: "게시물갯수" },
-          //operator {$inc: {totalPost: 기존값에 더해줄 값}}
-          { $inc: { totalPost: 1 } },
-          function (err, res) {
-            if (err) return console.log(err);
-          }
-        );
-      }
-    );
-  });
-});
 // list
 // ejs 파일은 항상 views 폴더안에 있어야 한다.
 app.get("/list", function (req, res) {
@@ -113,18 +83,6 @@ app.get("/search", (req, res) => {
     });
 });
 
-//delete
-app.delete("/delete", function (req, res) {
-  //DB데이터 안에 _id를 string -> int
-  req.body._id = parseInt(req.body._id);
-  // post 컬렉션에서 하나를 삭제.
-  db.collection("post").deleteOne(req.body, function (err, res) {
-    if (err) return console.log(err);
-    console.log("삭제완료");
-  });
-  res.status(200).send({ message: "성공이닷" });
-});
-
 //detaile
 app.get("/detail/:id", function (req, res) {
   //Db -> post -> _id :'__'데이터를 가져온다.
@@ -162,6 +120,7 @@ app.put("/edit", function (req, res) {
   );
 });
 
+//login
 app.get("/login", function (req, res) {
   res.render("login.ejs");
 });
@@ -178,6 +137,7 @@ app.post(
   }
 );
 
+//my page
 app.get("/mypage", loginTrue, function (req, res) {
   res.render("mypage.ejs", { 사용자: req.user });
 });
@@ -234,5 +194,64 @@ passport.deserializeUser(function (id, done) {
   db.collection("login").findOne({ id: id }, function (err, result) {
     // 디비에서 위에있는 user.id로 유저를 찾은 뒤에 유저 정보(result)를 넣는다.
     done(null, result);
+  });
+});
+
+// register (회원가입)
+app.post("/register", function (req, res) {
+  //데이터를 login이라는 DB에 insert(저장)
+  db.collection("login").insertOne(
+    { id: req.body.id, pw: req.body.pw },
+    function (err, result) {
+      if (err) return console.log(err);
+      res.redirect("/");
+    }
+  );
+});
+//delete
+app.delete("/delete", function (req, res) {
+  //DB데이터 안에 _id를 string -> int
+  req.body._id = parseInt(req.body._id);
+  // 본인이 작성한 게시물만 삭제 가능하도록 변수에 작성자를 넣어줌
+  var dataToDelete = { _id: req.body._id, 작성자: req.user.id };
+  // post 컬렉션에서 하나를 삭제.
+  db.collection("post").deleteOne(dataToDelete, function (err, res) {
+    if (err) return console.log(err);
+    console.log("삭제완료");
+  });
+  res.status(200).send({ message: "성공이닷" });
+});
+
+// add
+app.post("/add", function (req, res) {
+  res.redirect("/list");
+  console.log(req.body);
+  // _id 값을 관리하기 위해 counter컬렉션을 DB에 추가함(삭제, 수정이 쉬움).
+  //DB "counter" collection에 저장된 name: "게시물갯수"데이터 가져오기
+  db.collection("counter").findOne({ name: "게시물갯수" }, function (err, res) {
+    //개시물갯수를 변주에 저장
+    var tp = res.totalPost;
+    var saveData = {
+      _id: tp + 1,
+      제목: req.body.title,
+      날짜: req.body.date,
+      작성자: req.user._id,
+    };
+    // Db에 _id: tp+1 , 입력한 데이터를 "post" collection에 저장
+    db.collection("post").insertOne(saveData, function (err, res) {
+      if (err) return console.log(err);
+      console.log("저장완료");
+      // Db에 데이터를 저장한 후 tp+1를 해주기.
+      // updateOne DB 데이터수정 (한번에 하나 여러개를 수정하려면 updateMany)
+      // updateOne({수정할 데이터}, {수정 값}) 수정값은 operator으로 써야한다.
+      db.collection("counter").updateOne(
+        { name: "게시물갯수" },
+        //operator {$inc: {totalPost: 기존값에 더해줄 값}}
+        { $inc: { totalPost: 1 } },
+        function (err, res) {
+          if (err) return console.log(err);
+        }
+      );
+    });
   });
 });
