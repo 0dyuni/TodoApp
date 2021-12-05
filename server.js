@@ -258,3 +258,29 @@ app.post("/add", function (req, res) {
 
 app.use("/", require("./routes/shop.js"));
 app.use("/board", require("./routes/board.js"));
+
+//이미지 업로드 기능
+let multer = require("multer");
+const storage = multer.diskStorage({
+  // 이미지 저장경론
+  destination: function (req, file, cb) {
+    cb(null, "./public/image");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.get("/upload", function (req, res) {
+  res.render("upload.ejs");
+});
+// .single("인풋의 속성 이름")
+app.post("/upload", upload.single("a"), function (req, res) {
+  res.send("업로드 완료");
+});
+// : ← 파라미터 문법
+app.get("/image/:imageName", function (req, res) {
+  res.sendFile(__dirname + "/public/image/" + res.params.imageName);
+});
