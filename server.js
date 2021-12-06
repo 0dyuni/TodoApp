@@ -96,7 +96,7 @@ app.get("/detail/:id", function (req, res) {
   );
 });
 
-//edit
+//edit(수정)
 app.get("/edit/:id", function (req, res) {
   db.collection("post").findOne(
     { _id: parseInt(req.params.id) },
@@ -283,4 +283,19 @@ app.post("/upload", upload.single("a"), function (req, res) {
 // : ← 파라미터 문법
 app.get("/image/:imageName", function (req, res) {
   res.sendFile(__dirname + "/public/image/" + res.params.imageName);
+});
+
+//chat
+app.get("/chat", function (req, res) {
+  res.render("chat.ejs");
+});
+app.post("/chatroom", loginTrue, function (req, res) {
+  const saveData = {
+    title: "뭐시깽이 채팅방",
+    member: [req.body.당한사람id, res.user._id],
+    date: new Date(),
+  };
+  db.collection("chatroom")
+    .insertOne(saveData)
+    .then((result) => {});
 });
