@@ -41,7 +41,7 @@
                         </p>
                         <!--분류를 위해서 data-id로 버튼에 DB _id 지정  -->
                         <button class="btn btn-outline-danger delete" data-id="<%= posts[i]._id %>">삭제</button>
-                        <button class="btn btn-outline-danger chat" data-id="<%= post[i].작성자 %> ">채팅</button>
+                        <button class="btn btn-outline-danger chat" data-id="<%= posts[i].작성자 %> ">채팅</button>
                     </li>
                     <% } %>
             </ul>
@@ -108,8 +108,8 @@
             });
             //채팅
             $(".chat").click(function (e) {
-                const _id = e.target.dataset.id;
-                $.post("/chatroom", { 당한사람id: _id }).then(() => {
+                var id = e.target.dataset.id;
+                $.post("/chatroom", { 당한사람id: id }).then(() => {
                     console.log("채팅시작")
                 })
             })

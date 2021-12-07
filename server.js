@@ -13,6 +13,7 @@ app.use(methodOverride("_method"));
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
+const { ObjectId } = require("mongodb");
 require("dotenv").config();
 // 미들웨어
 app.use(
@@ -289,10 +290,11 @@ app.get("/image/:imageName", function (req, res) {
 app.get("/chat", function (req, res) {
   res.render("chat.ejs");
 });
+
 app.post("/chatroom", loginTrue, function (req, res) {
-  const saveData = {
+  var saveData = {
     title: "뭐시깽이 채팅방",
-    member: [req.body.당한사람id, res.user._id],
+    member: [ObjectId(req.body.당한사람id), req.user._id],
     date: new Date(),
   };
   db.collection("chatroom")
