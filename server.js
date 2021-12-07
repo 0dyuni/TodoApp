@@ -286,11 +286,7 @@ app.get("/image/:imageName", function (req, res) {
   res.sendFile(__dirname + "/public/image/" + res.params.imageName);
 });
 
-//chat
-app.get("/chat", function (req, res) {
-  res.render("chat.ejs");
-});
-
+//chats
 app.post("/chatroom", loginTrue, function (req, res) {
   var saveData = {
     title: "뭐시깽이 채팅방",
@@ -299,5 +295,16 @@ app.post("/chatroom", loginTrue, function (req, res) {
   };
   db.collection("chatroom")
     .insertOne(saveData)
-    .then((result) => {});
+    .then((result) => {
+      res.redirect("/chat");
+    });
+});
+
+app.get("/chat", loginTrue, function (req, res) {
+  db.collection("chatroom")
+    .find({ member: req.user._id })
+    .toArray()
+    .then((result) => {
+      res.render("chat.ejs", { data: result });
+    });
 });
