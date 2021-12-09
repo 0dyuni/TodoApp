@@ -33,10 +33,6 @@
                                 </h6>
                             </li>
                             <% } %>
-                                <li class="list-group-item">
-                                    <h6>채팅방2</h6>
-                                    <h6 class="text-small">채팅방설명</h6>
-                                </li>
                     </ul>
                 </div>
 
@@ -72,7 +68,25 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"
             integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2"
             crossorigin="anonymous"></script>
-
+        <script>
+            $("#send").click(function () {
+                // 채팅내용
+                const chatContent = $("#chat-input").val();
+                //보낼 데이터
+                const sendingData = {
+                    parent: nowClickId,
+                    content: chatContent,
+                };
+                $.post("/message", sendingData).then((a) => {
+                    console.log(a)
+                })
+            })
+            var nowClickId;
+            $(".list-group-item").click(function () {
+                $(this).css("background-color", "#eees")
+                nowClickId = $(this).attr("data-id")
+            })
+        </script>
         <!-- Option 2: Separate Popper and Bootstrap JS -->
         <!--
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

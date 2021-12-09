@@ -295,9 +295,7 @@ app.post("/chatroom", loginTrue, function (req, res) {
   };
   db.collection("chatroom")
     .insertOne(saveData)
-    .then((result) => {
-      res.redirect("/chat");
-    });
+    .then((result) => {});
 });
 
 app.get("/chat", loginTrue, function (req, res) {
@@ -307,4 +305,32 @@ app.get("/chat", loginTrue, function (req, res) {
     .then((result) => {
       res.render("chat.ejs", { data: result });
     });
+});
+
+app.post("/message", loginTrue, function (req, res) {
+  const saveData = {
+    parent: req.body.parent,
+    content: req.body.content,
+    userId: req.user._id,
+    date: new Date(),
+  };
+  db.collection("message")
+    .insertOne(saveData)
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+app.get("/삐용", loginTrue, function (req, res) {
+  res.writeHead(200, {
+    Connection: "keep-alive",
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+  });
+  //유저에게 데이터 전송 event:보낼데이터 이름
+  res.write("event: test\n");
+  res.write("data: 안농\n\n");
 });
