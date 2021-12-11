@@ -342,4 +342,17 @@ app.get("/message/:parentid", loginTrue, function (req, res) {
       // result 문자가 아니기 때문에 JSON.stringify()로 문자자료로 바꿔준다.
       res.write("data: " + JSON.stringify(result) + "\n\n");
     });
+  // change stream
+  // DB변동시->서버에게 알려줌->유져에게 보낼 수 있음
+  //$match: {} 컬랙션안의 원하는 document만 감시하고 싶으면
+  const pipeline = [{ $match: { "fullDocument.parent": req.params.parentid } }];
+  // 컬렉션을 지정
+  const collection = db.collection("message");
+  // .watch() 붙이면 실시간 감시, 변동 사항이 생기면 아래 코드를 실행
+  const changeStream = collection.watch(pipeline);
+  // Db에 변동이 생기면
+  changeStream.on("change", (result) => {
+    res.write("event: test\n");
+    res.write("data:" + JSON.stringify([result.fullDocument]) + "\n\n");
+  });
 });
