@@ -324,7 +324,7 @@ app.post("/message", loginTrue, function (req, res) {
     });
 });
 
-app.get("/message/:id", loginTrue, function (req, res) {
+app.get("/message/:parentid", loginTrue, function (req, res) {
   res.writeHead(200, {
     Connection: "keep-alive",
     "Content-Type": "text/event-stream",
@@ -332,7 +332,7 @@ app.get("/message/:id", loginTrue, function (req, res) {
   });
   //parent: req.params.id 유저가 누른 채팅방에 속한 채팅 메시지 가져오기
   db.collection("message")
-    .find({ parent: req.params.id })
+    .find({ parent: req.params.parentid })
     .toArray()
     .then((result) => {
       // 유저에게 데이터 전송 event:보낼데이터 이름 ,\n = 대행문자(enter과 같은 역활)
