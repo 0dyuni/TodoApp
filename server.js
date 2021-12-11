@@ -324,13 +324,22 @@ app.post("/message", loginTrue, function (req, res) {
     });
 });
 
-app.get("/삐용", loginTrue, function (req, res) {
+app.get("/message/:id", loginTrue, function (req, res) {
   res.writeHead(200, {
     Connection: "keep-alive",
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
   });
-  //유저에게 데이터 전송 event:보낼데이터 이름
-  res.write("event: test\n");
-  res.write("data: 안농\n\n");
+  //parent: req.params.id 유저가 누른 채팅방에 속한 채팅 메시지 가져오기
+  db.collection("message")
+    .find({ parent: req.params.id })
+    .toArray()
+    .then((result) => {
+      // 유저에게 데이터 전송 event:보낼데이터 이름 ,\n = 대행문자(enter과 같은 역활)
+      res.write("event: test\n");
+      // 위에서 찾은 data를 보내준다.
+      //(참고) 서버에서 실시간 전송시 문자자료만 전송가능
+      // result 문자가 아니기 때문에 JSON.stringify()로 문자자료로 바꿔준다.
+      res.write("data: " + JSON.stringify(result) + "\n\n");
+    });
 });

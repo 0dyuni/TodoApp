@@ -82,9 +82,23 @@
                 })
             })
             var nowClickId;
+            var eventSource
             $(".list-group-item").click(function () {
                 $(this).css("background-color", "#eees")
                 nowClickId = $(this).attr("data-id")
+                // chat 채널 나가기
+                if (eventSource != undefined) {
+                    eventSource.close()
+                }
+                // 서버와 실시간 소통체널 입장완료
+                // 유저가 데이터 수신은 new EventSource("/경로")
+                //  + nowClickId 유저가 선택한 채팅방의 메세지만 가져오게 그 부모의 아이디를 찾아서 서버에 전송
+                eventSource = new EventSource("/message" + nowClickId)
+                eventSource.addEventListener("test", function (e) {
+                    // 서버에서 보낸 데이터, 
+                    //문자췹급을 하기위해 JSON형식으로 바꿔준다.
+                    JSON.parse(e.data)
+                })
             })
         </script>
         <!-- Option 2: Separate Popper and Bootstrap JS -->
