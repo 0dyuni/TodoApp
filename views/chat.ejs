@@ -101,9 +101,11 @@
                     content: chatContent,
                 };
                 $.post("/message", sendingData).then((a) => {
-                    console.log(a)
+                    $("#chat-input").val("");
                 })
+
             })
+
         </script>
         <!-- Option 2: Separate Popper and Bootstrap JS -->
         <!--
