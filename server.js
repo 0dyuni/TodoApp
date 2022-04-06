@@ -35,91 +35,91 @@ MongoClient.connect(process.env.DB_URL, function (err, client) {
     console.log("listening on 8080");
   });
 });
-// 홈
-app.get("/", function (req, res) {
-  res.render(__dirname + "/views/index.ejs");
-});
-// write
-app.get("/write", function (req, res) {
-  res.render(__dirname + "/views/write.ejs");
-});
+// // 홈
+// app.get("/", function (req, res) {
+//   res.render(__dirname + "/views/index.ejs");
+// });
+// // write
+// app.get("/write", function (req, res) {
+//   res.render(__dirname + "/views/write.ejs");
+// });
 
-// list
-// ejs 파일은 항상 views 폴더안에 있어야 한다.
-app.get("/list", function (req, res) {
-  //DB에 저장된 post collection의 모든 데이터 꺼내기
-  //DB->post 컬렉션에 접근
-  //.find === 모든 데이터
-  //find만 사용하면 모든 메타 데이터까지 오기 떄문에 .toArray 를 붙여준다.
-  db.collection("post")
-    .find()
-    .toArray(function (err, req) {
-      if (err) return console.log(err);
-      //가져온 데이터를 ejs파일에 넣는다.
-      res.render("list.ejs", { posts: req });
-    });
-});
-//list search
-app.get("/search", (req, res) => {
-  var searchRequirement = [
-    {
-      $search: {
-        index: "titleSearch",
-        text: {
-          query: req.query.value,
-          path: "제목", //제목,날짜 모두에서 검색하고 싶으면 ["제목","날짜"]
-        },
-      },
-    },
-    //검색조건 추가(정렬기준)
-    { $sort: { _id: 1 } },
-  ];
-  console.log(req.query.value);
-  db.collection("post")
-    // $text DB에 만들어 놓은 index에 의해 검색
-    .aggregate(searchRequirement)
-    .toArray((err, result) => {
-      if (err) return console.log(err);
-      res.render("search.ejs", { posts: result });
-    });
-});
+// // list
+// // ejs 파일은 항상 views 폴더안에 있어야 한다.
+// app.get("/list", function (req, res) {
+//   //DB에 저장된 post collection의 모든 데이터 꺼내기
+//   //DB->post 컬렉션에 접근
+//   //.find === 모든 데이터
+//   //find만 사용하면 모든 메타 데이터까지 오기 떄문에 .toArray 를 붙여준다.
+//   db.collection("post")
+//     .find()
+//     .toArray(function (err, req) {
+//       if (err) return console.log(err);
+//       //가져온 데이터를 ejs파일에 넣는다.
+//       res.render("list.ejs", { posts: req });
+//     });
+// });
+// //list search
+// app.get("/search", (req, res) => {
+//   var searchRequirement = [
+//     {
+//       $search: {
+//         index: "titleSearch",
+//         text: {
+//           query: req.query.value,
+//           path: "제목", //제목,날짜 모두에서 검색하고 싶으면 ["제목","날짜"]
+//         },
+//       },
+//     },
+//     //검색조건 추가(정렬기준)
+//     { $sort: { _id: 1 } },
+//   ];
+//   console.log(req.query.value);
+//   db.collection("post")
+//     // $text DB에 만들어 놓은 index에 의해 검색
+//     .aggregate(searchRequirement)
+//     .toArray((err, result) => {
+//       if (err) return console.log(err);
+//       res.render("search.ejs", { posts: result });
+//     });
+// });
 
-//detaile
-app.get("/detail/:id", function (req, res) {
-  //Db -> post -> _id :'__'데이터를 가져온다.
-  //req.params.id: url의 파라미터중 id
-  db.collection("post").findOne(
-    { _id: parseInt(req.params.id) },
-    function (err, result) {
-      if (err) return console.log(err);
-      res.render("detail.ejs", { data: result });
-    }
-  );
-});
+// //detaile
+// app.get("/detail/:id", function (req, res) {
+//   //Db -> post -> _id :'__'데이터를 가져온다.
+//   //req.params.id: url의 파라미터중 id
+//   db.collection("post").findOne(
+//     { _id: parseInt(req.params.id) },
+//     function (err, result) {
+//       if (err) return console.log(err);
+//       res.render("detail.ejs", { data: result });
+//     }
+//   );
+// });
 
-//edit(수정)
-app.get("/edit/:id", function (req, res) {
-  db.collection("post").findOne(
-    { _id: parseInt(req.params.id) },
-    function (err, result) {
-      if (err) return console.log(err);
-      res.render("edit.ejs", { post: result });
-    }
-  );
-});
+// //edit(수정)
+// app.get("/edit/:id", function (req, res) {
+//   db.collection("post").findOne(
+//     { _id: parseInt(req.params.id) },
+//     function (err, result) {
+//       if (err) return console.log(err);
+//       res.render("edit.ejs", { post: result });
+//     }
+//   );
+// });
 
-app.put("/edit", function (req, res) {
-  db.collection("post").updateOne(
-    // ↓ name="id"인 input ↓
-    { _id: parseInt(req.body.id) },
-    // ↓ name="title"인 input ↓    ↓ name="date"인 input ↓
-    { $set: { 제목: req.body.title, 날짜: req.body.date } },
-    function (err, result) {
-      if (err) return console.log(err);
-      res.redirect("/list");
-    }
-  );
-});
+// app.put("/edit", function (req, res) {
+//   db.collection("post").updateOne(
+//     // ↓ name="id"인 input ↓
+//     { _id: parseInt(req.body.id) },
+//     // ↓ name="title"인 input ↓    ↓ name="date"인 input ↓
+//     { $set: { 제목: req.body.title, 날짜: req.body.date } },
+//     function (err, result) {
+//       if (err) return console.log(err);
+//       res.redirect("/list");
+//     }
+//   );
+// });
 
 //login
 app.get("/login", function (req, res) {
@@ -146,7 +146,8 @@ function loginTrue(req, res, next) {
   if (req.user) {
     next();
   } else {
-    res.send("로그인을 해주세요.");
+    // res.send("로그인을 해주세요.");
+    res.redirect("login");
   }
 }
 
@@ -355,4 +356,95 @@ app.get("/message/:parentid", loginTrue, function (req, res) {
     res.write("event: test\n");
     res.write("data:" + JSON.stringify([result.fullDocument]) + "\n\n");
   });
+});
+
+// 홈
+app.get("/", loginTrue, function (req, res) {
+  // res.render(__dirname + "/views/index.ejs");
+  res.redirect("/list");
+});
+// write
+app.get("/write", function (req, res) {
+  res.render(__dirname + "/views/write.ejs");
+});
+
+// list
+// ejs 파일은 항상 views 폴더안에 있어야 한다.
+app.get("/list", loginTrue, function (req, res) {
+  //DB에 저장된 post collection의 모든 데이터 꺼내기
+  //DB->post 컬렉션에 접근
+  //.find === 모든 데이터
+  //find만 사용하면 모든 메타 데이터까지 오기 떄문에 .toArray 를 붙여준다.
+  db.collection("post")
+    .find()
+    .toArray(function (err, req) {
+      if (err) return console.log(err);
+      //가져온 데이터를 ejs파일에 넣는다.
+      res.render("list.ejs", { posts: req });
+    });
+});
+//list search
+app.get("/search", (req, res) => {
+  var searchRequirement = [
+    {
+      $search: {
+        index: "titleSearch",
+        text: {
+          query: req.query.value,
+          path: "제목", //제목,날짜 모두에서 검색하고 싶으면 ["제목","날짜"]
+        },
+      },
+    },
+    //검색조건 추가(정렬기준)
+    { $sort: { _id: 1 } },
+  ];
+  console.log(req.query.value);
+  db.collection("post")
+    // $text DB에 만들어 놓은 index에 의해 검색
+    .aggregate(searchRequirement)
+    .toArray((err, result) => {
+      if (err) return console.log(err);
+      res.render("search.ejs", { posts: result });
+    });
+});
+
+//detaile
+app.get("/detail/:id", function (req, res) {
+  //Db -> post -> _id :'__'데이터를 가져온다.
+  //req.params.id: url의 파라미터중 id
+  db.collection("post").findOne(
+    { _id: parseInt(req.params.id) },
+    function (err, result) {
+      if (err) return console.log(err);
+      res.render("detail.ejs", { data: result });
+    }
+  );
+});
+
+//edit(수정)
+app.get("/edit/:id", function (req, res) {
+  db.collection("post").findOne(
+    { _id: parseInt(req.params.id) },
+    function (err, result) {
+      if (err) return console.log(err);
+      res.render("edit.ejs", { post: result });
+    }
+  );
+});
+
+app.put("/edit", function (req, res) {
+  db.collection("post").updateOne(
+    // ↓ name="id"인 input ↓
+    { _id: parseInt(req.body.id) },
+    // ↓ name="title"인 input ↓    ↓ name="date"인 input ↓
+    { $set: { 제목: req.body.title, 날짜: req.body.date } },
+    function (err, result) {
+      if (err) return console.log(err);
+      res.redirect("/list");
+    }
+  );
+});
+
+app.get("/signup", function (req, res) {
+  res.render("signup.ejs");
 });
